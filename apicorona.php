@@ -1,4 +1,5 @@
 <?php
+
 //get string between
 function get_string_between($string, $start, $end)
 {
@@ -202,37 +203,28 @@ function CoronaSulsel()
 //ntb
 function CoronaNtb()
 {
-    $url = "https://corona.ntbprov.go.id/list-data";
+    $url = "https://corona.ntbprov.go.id";
     $get_contents = file_get_contents($url);
-    $DOM = new \DOMDocument();
-    @$DOM->loadHTML(get_string_between($get_contents, '<div class="table-responsive">', '</div>'));
-    $trList = $DOM->getElementsByTagName("tr");
-    $rows = [];
-    foreach ($trList as $tr) {
-        $row = [];
-        foreach ($tr->getElementsByTagName("td") as $td) {
-            $row[] = trim($td->textContent);
-        }
-        $rows[] = $row;
-    }
-
+    $DOM = new \DOMDocument(); 
+    @$DOM->loadHTML($get_contents);
+    $xp    = new \DOMXPath($DOM);
+    $nodes = $xp->query('//div[@class="card-body weather-small"]');
     $result = [];
-    $filter = [PHP_EOL => "", "  " => " ", "\n" => "", "   " => ""];
-    $keys = 0;
-    foreach ($rows as $key => $value) {
-        if (!empty($value[0])) {
-            $result[$keys]['city'] = strtr($value[0], $filter);
-            $result[$keys]['odp'] = $value[5];
-            $result[$keys]['pdp'] = $value[2];
-            $result[$keys]['confirm'] = "Belum ada Data"; //sementara belum tersedia data
-            $keys++;
+    $arr_filter  = [
+        PHP_EOL => "",
+        "\t" => "",
+        "\n" =>"",
+        "   "=>"",
+        "  "=>""
+    ];
+    foreach ($nodes as $element) {
+        $nodes = $element->childNodes;
+        foreach ($nodes as $node) {
+            $result[] = array_filter(explode(" ",strtr($node->nodeValue,$arr_filter)))[1];
         }
     }
-
-    $key_end = end(array_keys($result));
-    $data = $result[$key_end];
-    unset($result[$key_end]);
-    return json_encode(["odp" => (int) $data['odp'], "pdp" => (int) $data['pdp'], "confirm" => $data['confirm'], "detail" => $result]);
+    $data = array_filter($result); 
+    return json_encode(["odp" => (int) $data[1], "pdp" => (int) $data[4], "confirm" => $data[7]]);
 }
 
 
