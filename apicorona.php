@@ -128,22 +128,17 @@ function Coronasumsel()
 // lampung
 function CoronaLampung()
 {
-    $url = [
-        "https://geoportal.lampungprov.go.id/gis/rest/services/Kesehatan/COVID19_KABUPATEN/FeatureServer/0/query?f=json&where=pdp%20%3C%3E%200&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A11271098.442811023%2C%22ymin%22%3A-626172.1357070468%2C%22xmax%22%3A11897270.578523021%2C%22ymax%22%3A0.000004950910806655884%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D&geometryType=esriGeometryEnvelope&inSR=102100&outFields=*&orderByFields=pdp%20DESC&outSR=102100&resultType=tile",
-        "https://geoportal.lampungprov.go.id/gis/rest/services/Kesehatan/COVID19_KABUPATEN/FeatureServer/0/query?f=json&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A11271098.442811023%2C%22ymin%22%3A-1252344.2714190446%2C%22xmax%22%3A11897270.578523021%2C%22ymax%22%3A-626172.1357070468%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D&geometryType=esriGeometryEnvelope&inSR=102100&outFields=*&outSR=102100&resultType=tile",
-    ];
+    $url = "https://geoportal.lampungprov.go.id/gis/rest/services/Kesehatan/COVID19_KABUPATEN/FeatureServer/0/query?f=json&where=OBJECTID+%3E+0&outFields=*&returnGeometry=false&fbclid=IwAR2kiLexsOlYgMxTWykITW3qJNStatBAm5HGcTeDKHUSy1b0VYoUONZZ1S8";
 
     $data_lampung = [];
     $key = 0;
-    foreach ($url as $site) {
-        $get_contents = json_decode(file_get_contents($site), true);
-        foreach ($get_contents['features'] as $value) {
-            $data_lampung[$key]['city'] = $value['attributes']['kabupaten'];
-            $data_lampung[$key]['odp'] = (int) $value['attributes']['odp'];
-            $data_lampung[$key]['pdp'] = (int) $value['attributes']['pdp'];
-            $data_lampung[$key]['confirm'] = (int) $value['attributes']['hsp'];
-            $key++;
-        }
+    $get_contents = json_decode(file_get_contents($url), true);
+    foreach ($get_contents['features'] as $value) {
+        $data_lampung[$key]['city'] = $value['attributes']['kabupaten'];
+        $data_lampung[$key]['odp'] = (int) $value['attributes']['odp'];
+        $data_lampung[$key]['pdp'] = (int) $value['attributes']['pdp'];
+        $data_lampung[$key]['confirm'] = (int) $value['attributes']['hsp'];
+        $key++;
     }
 
     $count_odp = array_sum(array_column($data_lampung, 'odp'));
@@ -205,7 +200,7 @@ function CoronaNtb()
 {
     $url = "https://corona.ntbprov.go.id";
     $get_contents = file_get_contents($url);
-    $DOM = new \DOMDocument(); 
+    $DOM = new \DOMDocument();
     @$DOM->loadHTML($get_contents);
     $xp    = new \DOMXPath($DOM);
     $nodes = $xp->query('//div[@class="card-body weather-small"]');
@@ -213,17 +208,17 @@ function CoronaNtb()
     $arr_filter  = [
         PHP_EOL => "",
         "\t" => "",
-        "\n" =>"",
-        "   "=>"",
-        "  "=>""
+        "\n" => "",
+        "   " => "",
+        "  " => ""
     ];
     foreach ($nodes as $element) {
         $nodes = $element->childNodes;
         foreach ($nodes as $node) {
-            $result[] = array_filter(explode(" ",strtr($node->nodeValue,$arr_filter)))[1];
+            $result[] = array_filter(explode(" ", strtr($node->nodeValue, $arr_filter)))[1];
         }
     }
-    $data = array_filter($result); 
+    $data = array_filter($result);
     return json_encode(["odp" => (int) $data[1], "pdp" => (int) $data[4], "confirm" => $data[7]]);
 }
 
@@ -279,5 +274,4 @@ function CoronaKalbar()
     }
 
     return json_encode(["odp" => (int) $result[1], "pdp" => (int) $result[0], "confirm" => "Belum ada Data"]);
-}
-
+} 
