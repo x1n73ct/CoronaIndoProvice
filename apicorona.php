@@ -274,4 +274,83 @@ function CoronaKalbar()
     }
 
     return json_encode(["odp" => (int) $result[1], "pdp" => (int) $result[0], "confirm" => "Belum ada Data"]);
-} 
+}
+
+// maluku utara
+function CoronaMalut()
+{
+    $url = "http://corona.malutprov.go.id/";
+    $arrContextOptions = array(
+        "ssl" => array(
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+        ),
+    );
+
+    $get_contents = file_get_contents($url, false, stream_context_create($arrContextOptions));
+    $DOM = new \DOMDocument();
+    @$DOM->loadHTML($get_contents);
+    $xp    = new \DOMXPath($DOM);
+    $nodes = $xp->query('//p[@class="card-text"]');
+    $result = [];
+    $arr_filter =  ["\t" => "", "\n" => ""];
+    foreach ($nodes as $element) {
+        $nodes = $element->childNodes;
+        foreach ($nodes as $node) {
+            $result[] = $node->nodeValue;
+        }
+    }
+
+    return json_encode(["odp" => (int) $result[1], "pdp" => (int) $result[2], "confirm" => (int) $result[3]]);
+}
+
+//kepri
+function CoronaKepri()
+{
+    $url = "https://corona.kepriprov.go.id/data/";
+    $arrContextOptions = array(
+        "ssl" => array(
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+        ),
+    );
+
+    $get_contents = file_get_contents($url, false, stream_context_create($arrContextOptions));
+    $DOM = new \DOMDocument();
+    @$DOM->loadHTML($get_contents);
+    $xp    = new \DOMXPath($DOM);
+    $nodes = $xp->query('//span[@class="elementor-price-table__integer-part"]');
+    $result = [];
+    $arr_filter =  ["\t" => "", "\n" => ""];
+    foreach ($nodes as $element) {
+        $nodes = $element->childNodes;
+        foreach ($nodes as $node) {
+            $result[] = $node->nodeValue;
+        }
+    }
+
+    return json_encode(["odp" => (int) $result[0], "pdp" => (int) $result[1], "confirm" => (int) $result[2]]);
+}
+
+//Riau
+function CoronaRiau()
+{
+    $url = "https://corona.riau.go.id";
+    $arrContextOptions = array(
+        "ssl" => array(
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+        ),
+    );
+
+    $get_contents = file_get_contents($url, false, stream_context_create($arrContextOptions));
+    $DOM = new \DOMDocument();
+    @$DOM->loadHTML($get_contents);
+    $xp    = new \DOMXPath($DOM);
+    $nodes = $xp->query('//span[@data-from-value="0"]');
+    $result = [];
+    foreach ($nodes as $element) {
+        $result[] = $element->getAttribute("data-to-value");
+    }
+    return json_encode(["odp" => (int) $result[0], "pdp" => (int) $result[1], "confirm" => (int) $result[2]]);
+}
