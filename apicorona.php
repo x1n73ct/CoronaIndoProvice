@@ -354,3 +354,28 @@ function CoronaRiau()
     }
     return json_encode(["odp" => (int) $result[0], "pdp" => (int) $result[1], "confirm" => (int) $result[2]]);
 }
+
+//Maluku
+function CoronaMaluku()
+{
+    $url = "https://corona.malukuprov.go.id";
+    $arrContextOptions = array(
+        "ssl" => array(
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+        ),
+    );
+
+    $get_contents = file_get_contents($url, false, stream_context_create($arrContextOptions));
+    $DOM = new \DOMDocument();
+    @$DOM->loadHTML($get_contents);
+    $xp    = new \DOMXPath($DOM);
+    $nodes = $xp->query('//span[@data-from-value="0"]');
+    $result = [];
+    foreach ($nodes as $element) {
+        $result[] = $element->getAttribute("data-to-value");
+    }
+    return json_encode(["odp" => (int) $result[0], "pdp" => (int) $result[1], "confirm" => (int) $result[2]]);
+}
+
+print_r(CoronaMaluku());
