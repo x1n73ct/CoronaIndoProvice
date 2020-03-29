@@ -377,5 +377,3 @@ function CoronaMaluku()
     }
     return json_encode(["odp" => (int) $result[0], "pdp" => (int) $result[1], "confirm" => (int) $result[2]]);
 }
-
-print_r(CoronaMaluku());
