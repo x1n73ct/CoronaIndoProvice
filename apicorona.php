@@ -57,9 +57,9 @@ function CoronaJateng()
 {
     $url = "https://corona.jatengprov.go.id/";
     $get_contents = file_get_contents($url);
-    $count_odp = get_string_between($get_contents, '<p class="card-text" style="color:green;">', '</p>');
-    $count_pdp = get_string_between($get_contents, '<p class="card-text" style="color:#0373fc;">', '</p>');
-    $count_confirm = get_string_between($get_contents, '<p class="card-text" style="color:red;">', '</p>');
+    $count_odp = get_string_between($get_contents, '<h3 class="font-counter fc-ungu">', '<sup');
+    $count_pdp = get_string_between($get_contents, '<h3 class="font-counter fc-orange">', '</sup');
+    $count_confirm = get_string_between($get_contents, '<div class="font-counter fc-red">', '<h6');
     return json_encode(["odp" => (int) $count_odp, "pdp" => (int) $count_pdp, "confirm" => (int) $count_confirm]);
 }
 
